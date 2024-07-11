@@ -2,11 +2,11 @@
 
 ## Overview
 
-PCPOLICY is a command line utility that allows for bulk updating of Prisma Cloud policies. It supports applying enable/disable actions, changing policy severities, and filtering policies based on various criteria.
+`pcpolicy` is a command line utility that allows for bulk updating of Prisma Cloud policies. It supports applying enable/disable actions, changing policy severities, and filtering policies based on various criteria.
 
 ## Installation
 
-To install PCPOLICY, you need to have Python 3 and pip installed on your machine. You can install PCPOLICY using the following commands:
+To install `pcpolicy`, you need to have Python 3 and pip installed on your machine. You can install `pcpolicy` using the following commands:
 
 ```sh
 # Install build tools
@@ -84,6 +84,10 @@ pcpolicy --severity critical --cloud azure --policy-subtype run
 ```sh
 pcpolicy --severity m --policy-disabled --policy-subtype run --include public
 ```
+
+<br>
+
+---
 
 ## Contributing
 
