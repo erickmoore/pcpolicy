@@ -4,6 +4,16 @@
 
 `pcpolicy` is a command line utility that allows for bulk updating of Prisma Cloud policies. It supports applying enable/disable actions, changing policy severities, and filtering policies based on various criteria.
 
+## Requirements
+
+This script currently uses environment variables to authenticate against Prisma Cloud. In the future this may be changed to another method, but currently it is required to have the following 3 settings added as environment variables on the machine where you run the script.
+
+ | name |  setting  | type | description |
+ |----|-----------|------|-------------|
+ | PRISMA_CLOUD_URL | Prisma Cloud Base URL | `string` | Your Prisma Cloud app stack URL in the format: https://app.prismacloud.io 
+ | PRISMA_CLOUD_IDENTITY | Prisma Cloud Identity | `string` | Username or access key with the ability to view and modify policy.
+ | PRISMA_CLOUD_SECRET | Prisma Cloud Secret | `string` | Password for username or access key above
+
 ## Installation
 
 To install `pcpolicy`, you need to have Python 3 and pip installed on your machine. You can install `pcpolicy` using the following commands:
