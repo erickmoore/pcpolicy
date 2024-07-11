@@ -9,9 +9,9 @@ from modules.arg_validator import MutuallyExclusiveOption, SeverityType
 import json
 
 @click.command()
-@click.option('--apply', is_flag=True, help="Apply disable/enable for the selected policies")
-@click.option('--severity', required=True, type=SeverityType(), help="Policy severity")
-@click.option('--new-severity', type=click.Choice(['critical', 'high', 'medium', 'low', 'informational']), help="Chnage selected policy severity")
+@click.option('--apply', is_flag=True, help="Apply selected changes")
+@click.option('--severity', required=True, type=SeverityType(), help=f"Policy severity, accepts: c: critical, h: high, m: medium, l: low, i: informational)")
+@click.option('--new-severity', type=click.Choice(['critical', 'high', 'medium', 'low', 'informational']), help="Change selected policy severity")
 @click.option('--policy-subtype', type=click.Choice(['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']))
 @click.option('--cloud', type=click.Choice(['aws', 'azure', 'gcp', 'alibaba', 'oci']))
 @click.option('--policy-enabled', is_flag=True, help="Find enabled policies")
@@ -24,7 +24,7 @@ import json
 #@click.option('--compliance', multiple=True, type=str, help="Match policies against a compliance standard")
 #@click.option('--export', multiple=True, type=str, help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, label, policy_enabled, policy_disabled, enable, disable, include, exclude, compliance, new_severity, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity):
     
     policy_status = None
     if policy_enabled: policy_status = 'true'
@@ -35,7 +35,7 @@ def main(apply, severity, policy_subtype, cloud, label, policy_enabled, policy_d
     if disable: policy_action = 'disable'
     
     token = login(url, username, password)
-    policies = get_policies(url, token, severity, policy_status, policy_subtype, label, compliance, cloud)
+    policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud)
     
     # Create Pandas DataFrame
     df = pd.DataFrame(policies)

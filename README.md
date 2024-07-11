@@ -69,10 +69,10 @@ pcpolicy --cloud aws --severity high --new-severity medium --apply
 pcpolicy --severity critical --cloud aws --policy-subtype run
 ```
 
-#### Include and exclude specific policies by name
+#### Find all disabled medium (m) severity runtime policies that include the word 'public'
 
 ```sh
-pcpolicy --severity high --include PolicyName1 --exclude PolicyName2
+pcpolicy --severity m --policy-disabled --policy-subtype run --include public
 ```
 
 ## Contributing

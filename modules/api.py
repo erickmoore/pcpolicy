@@ -21,7 +21,7 @@ def login(url, username, password):
 
 # // Get Policies
 #
-def get_policies(url, token, severity, policy_status, policy_subtype, label, compliance, cloud):
+def get_policies(url, token, severity, policy_status, policy_subtype, cloud):
     
     params = []
     
