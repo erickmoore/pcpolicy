@@ -74,9 +74,11 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         
         if apply:
             if enable:
-                status_code = apply_policies(url, token, policy_action, policy_id)
+                payload = json.dumps(policies[index])
+                status_code = apply_policies(url, token, policy_action, policy_id, payload)
             if disable:
-                status_code = apply_policies(url, token, policy_action, policy_id)
+                payload = json.dumps(policies[index])
+                status_code = apply_policies(url, token, policy_action, policy_id, payload)
             if new_severity:
                 payload = json.dumps(policies[index])
                 status_code = apply_policies(url, token, policy_action, policy_id, payload)
