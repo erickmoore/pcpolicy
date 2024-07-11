@@ -45,16 +45,16 @@ pcpolicy [OPTIONS]
 
 ### Examples
 
-#### List policies with severity `high`
+#### List disabled policies with severity `high`
 
 ```sh
-pcpolicy --severity high
+pcpolicy --severity high --policy-disabled
 ```
 
-#### Enable policies with severity `medium` and label `identity`
+#### Enable policies with severity `medium` of type `build`
 
 ```sh
-pcpolicy --severity medium --label identity --enable --apply
+pcpolicy --severity medium  --policy-subtype build --enable --apply
 ```
 
 #### Change the severity of AWS policies with severity `high` to `medium`
