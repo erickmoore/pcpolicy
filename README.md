@@ -31,8 +31,8 @@ pcpolicy [OPTIONS]
 
 ### Options
 
-- `--apply`: Apply enable/disable for the selected policies.
-- `--severity`: Specify the policy severity (required).
+- `--apply`: Apply selected changes.
+- `--severity`: Specify the policy severity (required) to one of `[c: critical, h: high, m: medium, l: low, i: informational]`.
 - `--new-severity`: Change the selected policy severity to one of `['critical', 'high', 'medium', 'low', 'informational']`.
 - `--policy-subtype`: Filter policies by subtype (`['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']`).
 - `--cloud`: Filter policies by cloud provider (`['aws', 'azure', 'gcp', 'alibaba', 'oci']`).
@@ -42,6 +42,10 @@ pcpolicy [OPTIONS]
 - `--disable`: Disable the selected policies (mutually exclusive with `--enable`).
 - `--include`: Include policies by name (multiple values allowed).
 - `--exclude`: Exclude policies by name (multiple values allowed).
+
+> [!IMPORTANT]
+> All options that make changes to policy require --apply to be added to the command.
+> This is done to prevent accidental modification of policies.
 
 ### Examples
 
@@ -63,10 +67,10 @@ pcpolicy --severity medium  --policy-subtype build --enable --apply
 pcpolicy --cloud aws --severity high --new-severity medium --apply
 ```
 
-#### List policies for `aws` cloud with `run` subtype
+#### List policies for `Azure` cloud with `run` subtype
 
 ```sh
-pcpolicy --severity critical --cloud aws --policy-subtype run
+pcpolicy --severity critical --cloud azure --policy-subtype run
 ```
 
 #### Find all disabled medium (m) severity runtime policies that include the word 'public'
