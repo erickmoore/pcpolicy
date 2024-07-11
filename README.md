@@ -49,33 +49,37 @@ pcpolicy [OPTIONS]
 > All options that make changes to policy require `--apply` to be added to the command.
 > This is done to prevent accidental modification of policies.
 
+<br>
+
+---
+
 ### Examples
 
-#### List disabled policies with severity `high`
+##### List disabled policies with severity `high`
 
 ```sh
 pcpolicy --severity high --policy-disabled
 ```
 
-#### Enable policies with severity `medium` of type `build`
+##### Enable policies with severity `medium` of type `build`
 
 ```sh
 pcpolicy --severity medium  --policy-subtype build --enable --apply
 ```
 
-#### Change the severity of AWS policies with severity `high` to `medium`
+##### Change the severity of AWS policies with severity `high` to `medium`
 
 ```sh
 pcpolicy --cloud aws --severity high --new-severity medium --apply
 ```
 
-#### List policies for `Azure` cloud with `run` subtype
+##### List policies for `Azure` cloud with `run` subtype
 
 ```sh
 pcpolicy --severity critical --cloud azure --policy-subtype run
 ```
 
-#### Find all disabled medium (m) severity runtime policies that include the word 'public'
+##### Find all disabled medium (m) severity runtime policies that include the word 'public'
 
 ```sh
 pcpolicy --severity m --policy-disabled --policy-subtype run --include public
