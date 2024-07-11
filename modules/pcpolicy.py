@@ -14,17 +14,15 @@ import json
 @click.option('--new-severity', type=click.Choice(['critical', 'high', 'medium', 'low', 'informational']), help="Chnage selected policy severity")
 @click.option('--policy-subtype', type=click.Choice(['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']))
 @click.option('--cloud', type=click.Choice(['aws', 'azure', 'gcp', 'alibaba', 'oci']))
-@click.option('--label', type=click.Choice(['identity', 'tbd']), help="Policy label")
 @click.option('--policy-enabled', is_flag=True, help="Find enabled policies")
 @click.option('--policy-disabled', is_flag=True, help="Find disabled policies")
 @click.option('--enable', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["disable"], help="Enable selected policies")
 @click.option('--disable', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["enable"], help="Disable selected policies")
 @click.option('--include', multiple=True, type=str, help="Include policies by name")
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
-@click.option('--compliance', multiple=True, type=str, help="Match policies against a compliance standard")
-@click.option('--export', multiple=True, type=str, help="Export results as a CSV")
-
-#Identity Misconfiguration
+#@click.option('--label', type=click.Choice(['identity', 'tbd']), help="Policy label")
+#@click.option('--compliance', multiple=True, type=str, help="Match policies against a compliance standard")
+#@click.option('--export', multiple=True, type=str, help="Export results as a CSV")
 
 def main(apply, severity, policy_subtype, cloud, label, policy_enabled, policy_disabled, enable, disable, include, exclude, compliance, new_severity, export):
     

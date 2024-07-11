@@ -1,6 +1,8 @@
 import json
 import requests
 
+# // Get Login Token
+#
 def login(url, username, password):
     loginURL = url + "/login"
     payload = json.dumps({
@@ -17,7 +19,8 @@ def login(url, username, password):
     
     return token
 
-
+# // Get Policies
+#
 def get_policies(url, token, severity, policy_status, policy_subtype, label, compliance, cloud):
     
     params = []
@@ -49,6 +52,8 @@ def get_policies(url, token, severity, policy_status, policy_subtype, label, com
     
     return policies
 
+# // Modify Policies
+#
 def apply_policies(url, token, policy_action, policy_id, payload):
     api_headers = {
         'Content-Type': 'application/json; charset=UTF-8',
