@@ -43,8 +43,10 @@ pcpolicy [OPTIONS]
 - `--include`: Include policies by name (multiple values allowed).
 - `--exclude`: Exclude policies by name (multiple values allowed).
 
+<br>
+
 > [!IMPORTANT]
-> All options that make changes to policy require --apply to be added to the command.
+> All options that make changes to policy require `--apply` to be added to the command.
 > This is done to prevent accidental modification of policies.
 
 ### Examples
