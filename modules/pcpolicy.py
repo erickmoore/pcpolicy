@@ -3,14 +3,14 @@
 import pandas as pd
 import click
 from modules.config import url, password, username
-from modules.api import login, get_policies, apply_policies
+from modules.api import login, get_policies, apply_policies, get_compliance
 from modules.messages import print_status, print_results, print_total, print_apply
 from modules.arg_validator import MutuallyExclusiveOption, SeverityType
 import json
 
 @click.command()
 @click.option('--apply', is_flag=True, help="Apply selected changes")
-@click.option('--severity', required=True, type=SeverityType(), help=f"Policy severity, accepts: c: critical, h: high, m: medium, l: low, i: informational)")
+@click.option('--severity', type=SeverityType(), help=f"Policy severity, accepts: c: critical, h: high, m: medium, l: low, i: informational)")
 @click.option('--new-severity', type=click.Choice(['critical', 'high', 'medium', 'low', 'informational']), help="Change selected policy severity")
 @click.option('--policy-subtype', type=click.Choice(['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']))
 @click.option('--cloud', type=click.Choice(['aws', 'azure', 'gcp', 'alibaba', 'oci']))
@@ -20,11 +20,12 @@ import json
 @click.option('--disable', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["enable"], help="Disable selected policies")
 @click.option('--include', multiple=True, type=str, help="Include policies by name")
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
+@click.option('--listcompliance', is_flag=True, help="List compliance names")
 #@click.option('--label', type=click.Choice(['identity', 'tbd']), help="Policy label")
-#@click.option('--compliance', multiple=True, type=str, help="Match policies against a compliance standard")
+@click.option('--compliance', type=str, help="Match policies against a compliance standard")
 #@click.option('--export', multiple=True, type=str, help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, listcompliance, compliance):
     
     policy_status = None
     if policy_enabled: policy_status = 'true'
@@ -35,10 +36,28 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     if disable: policy_action = 'disable'
     
     token = login(url, username, password)
+    
+    if listcompliance:
+        compliance_standards = get_compliance(url, token)
+        df = pd.DataFrame(compliance_standards)
+        if include:
+            df = df[df['name'].apply(lambda x: any(f in x for f in include))]
+        if exclude:
+            df = df[~df['name'].apply(lambda x: any(f in x for f in exclude))]
+        for index, row in df.iterrows():
+            compliance_name = row['name']
+            print(compliance_name)
+        return
+    
     policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud)
     
     # Create Pandas DataFrame
     df = pd.DataFrame(policies)
+    
+    # column_names = df.columns.tolist()
+    # print(column_names)
+    
+    #complianceMetadata
     
     # Filter DataFrame for policies that match applied filters
     if include:
@@ -57,37 +76,38 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         policy_id = row['policyId']
         policy_status = row['enabled']
         policy_severity = row['severity']
+        compliance_data = row['complianceMetadata']
         
         total_count += 1
         
-        if policy_status == True:
-            enabled_count += 1
-            
-        if policy_status == False:
-            disabled_count += 1
-        
-        if new_severity:
-            policies[index]['severity'] = new_severity
+        if compliance is None or (compliance_data is not None and isinstance(compliance_data, list) and any(item.get('standardName') == compliance for item in compliance_data)):
+
+            if policy_status == True:
+                enabled_count += 1
                 
-        if not apply:
-            print_results(policy_name, policy_status, policy_action, policy_severity, new_severity)
-        
-        if apply:
-            if enable:
-                payload = json.dumps(policies[index])
-                status_code = apply_policies(url, token, policy_action, policy_id, payload)
-            if disable:
-                payload = json.dumps(policies[index])
-                status_code = apply_policies(url, token, policy_action, policy_id, payload)
+            if policy_status == False:
+                disabled_count += 1
+            
             if new_severity:
-                payload = json.dumps(policies[index])
-                status_code = apply_policies(url, token, policy_action, policy_id, payload)
+                policies[index]['severity'] = new_severity
+                    
+            if not apply:
+                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity)
             
-            if status_code == 200: 
-                print_status(status_code, policy_name)
+            if apply:
+                if enable:
+                    status_code = apply_policies(url, token, policy_action, policy_id)
+                if disable:
+                    status_code = apply_policies(url, token, policy_action, policy_id)
+                if new_severity:
+                    payload = json.dumps(policies[index])
+                    status_code = apply_policies(url, token, policy_action, policy_id, payload)
                 
-            if status_code == 400:
-                print_status(status_code, policy_name)
+                if status_code == 200: 
+                    print_status(status_code, policy_name)
+                    
+                if status_code == 400:
+                    print_status(status_code, policy_name)
             
     print_total(total_count, enabled_count, disabled_count, severity, policy_subtype)
 
