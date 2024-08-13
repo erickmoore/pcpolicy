@@ -110,6 +110,13 @@ pcpolicy --list-compliance --include PCI
 pcpolicy --compliance 'PCI DSS v4.0' --policy-disabled
 ```
 
+
+##### List all disabled policies for the 'PCI DSS v4.0' compliance standard for AWS and enable them
+
+```sh
+pcpolicy --compliance 'PCI DSS v4.0' --policy-disabled --enable --cloud aws --apply
+```
+
 <br>
 
 ---
