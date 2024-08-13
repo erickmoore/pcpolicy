@@ -46,12 +46,15 @@ pcpolicy [OPTIONS]
 - `--new-severity`: Change the selected policy severity to one of `['critical', 'high', 'medium', 'low', 'informational']`.
 - `--policy-subtype`: Filter policies by subtype (`['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']`).
 - `--cloud`: Filter policies by cloud provider (`['aws', 'azure', 'gcp', 'alibaba', 'oci']`).
+- `--list-compliance`: List all compliance standard names.
+- `--compliance`: Find policies associated with a compliance standard.
 - `--policy-enabled`: Find enabled policies.
 - `--policy-disabled`: Find disabled policies.
 - `--enable`: Enable the selected policies (mutually exclusive with `--disable`).
 - `--disable`: Disable the selected policies (mutually exclusive with `--enable`).
 - `--include`: Include policies by name (multiple values allowed).
 - `--exclude`: Exclude policies by name (multiple values allowed).
+- `--export`: Export results as a CSV.
 
 <br>
 
@@ -93,6 +96,18 @@ pcpolicy --severity critical --cloud azure --policy-subtype run
 
 ```sh
 pcpolicy --severity m --policy-disabled --policy-subtype run --include public
+```
+
+##### List all compliance standards that include the word 'PCI'
+
+```sh
+pcpolicy --list-compliance --include PCI
+```
+
+##### List all disabled policies for the 'PCI DSS v4.0' compliance standard
+
+```sh
+pcpolicy --compliance 'PCI DSS v4.0' --policy-disabled
 ```
 
 <br>
