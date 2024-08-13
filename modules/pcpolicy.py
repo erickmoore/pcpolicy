@@ -22,12 +22,12 @@ import json
 @click.option('--disable', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["enable"], help="Disable selected policies")
 @click.option('--include', multiple=True, type=str, help="Include policies by name")
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
-@click.option('--listcompliance', is_flag=True, help="List compliance names")
+@click.option('--list-compliance', is_flag=True, help="List compliance names")
 #@click.option('--label', type=click.Choice(['identity', 'tbd']), help="Policy label")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, listcompliance, compliance, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, compliance, export):
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
@@ -41,7 +41,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     
     token = login(url, username, password)
     
-    if listcompliance:
+    if list_compliance:
         compliance_standards = get_compliance(url, token)
         df = pd.DataFrame(compliance_standards)
         if include:
@@ -60,8 +60,6 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     
     # column_names = df.columns.tolist()
     # print(column_names)
-    
-    #complianceMetadata
     
     # Filter DataFrame for policies that match applied filters
     if include:
