@@ -6,6 +6,8 @@ from modules.config import url, password, username
 from modules.api import login, get_policies, apply_policies, get_compliance
 from modules.messages import print_status, print_results, print_total, print_apply
 from modules.arg_validator import MutuallyExclusiveOption, SeverityType
+from modules.export import export_csv
+from datetime import datetime
 import json
 
 @click.command()
@@ -23,10 +25,12 @@ import json
 @click.option('--listcompliance', is_flag=True, help="List compliance names")
 #@click.option('--label', type=click.Choice(['identity', 'tbd']), help="Policy label")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
-#@click.option('--export', multiple=True, type=str, help="Export results as a CSV")
+@click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, listcompliance, compliance):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, listcompliance, compliance, export):
     
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
     policy_status = None
     if policy_enabled: policy_status = 'true'
     if policy_disabled: policy_status = 'false'
@@ -48,7 +52,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             compliance_name = row['name']
             print(compliance_name)
         return
-    
+        
     policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud)
     
     # Create Pandas DataFrame
@@ -69,6 +73,8 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     total_count     = 0
     enabled_count   = 0
     disabled_count  = 0
+    
+
     
     # Loop through policies from Pandas DataFrame
     for index, row in df.iterrows():
@@ -93,24 +99,40 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
                     
             if not apply:
                 print_results(policy_name, policy_status, policy_action, policy_severity, new_severity)
+                if export:
+                    filename = f"before_change_{timestamp}.csv"
+                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity])
             
             if apply:
                 if enable:
+                    action = "enable"
                     status_code = apply_policies(url, token, policy_action, policy_id)
                 if disable:
+                    action = "disable"
                     status_code = apply_policies(url, token, policy_action, policy_id)
                 if new_severity:
+                    action = "severity"
                     payload = json.dumps(policies[index])
                     status_code = apply_policies(url, token, policy_action, policy_id, payload)
                 
-                if status_code == 200: 
+                if status_code == 200:
+                    if action == "enable":
+                        policy_status = "true"
+                    if action == "disable":
+                        policy_status = "false"          
+                    if action == "severity":
+                        policy_severity = new_severity                                           
+                    filename = f"success_{action}_{timestamp}.csv"
+                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity])
                     print_status(status_code, policy_name)
                     
                 if status_code == 400:
+                    filename = f"failed_{action}_{timestamp}.csv"
+                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity])
                     print_status(status_code, policy_name)
             
     print_total(total_count, enabled_count, disabled_count, severity, policy_subtype)
-
+    
     if enable or disable or new_severity:
         print_apply(apply)
     pass
