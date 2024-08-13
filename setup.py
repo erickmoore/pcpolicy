@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pcpolicy',
-    version='0.0.5',
+    version='0.0.6',
     description='This command line utility allows for bulk updating of Prisma Cloud policies',
     author='Erick Moore',
     license='MIT',

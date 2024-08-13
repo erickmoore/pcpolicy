@@ -62,5 +62,7 @@ def severity_color(severity):
         severity_text = Fore.YELLOW + severity + " priority" + Fore.CYAN
     if severity == 'informational': 
         severity_text = Fore.BLUE + severity + " priority" + Fore.CYAN
+    if severity == None: 
+        severity_text = ""
         
     return severity_text

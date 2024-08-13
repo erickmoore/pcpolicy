@@ -21,7 +21,7 @@ def login(url, username, password):
 
 # // Get Policies
 #
-def get_policies(url, token, severity, policy_status, policy_subtype, cloud):
+def get_policies(url, token, severity=None, policy_status=None, policy_subtype=None, cloud=None):
     
     params = []
     
@@ -54,7 +54,7 @@ def get_policies(url, token, severity, policy_status, policy_subtype, cloud):
 
 # // Modify Policies
 #
-def apply_policies(url, token, policy_action, policy_id, payload):
+def apply_policies(url, token, policy_action, policy_id, payload=None):
     api_headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json; charset=UTF-8',
@@ -78,3 +78,20 @@ def apply_policies(url, token, policy_action, policy_id, payload):
         results = requests.request("PUT", policy_url, headers=api_headers, data=payload)
         
         return results.status_code
+    
+    
+# // Get Policies
+#
+def get_compliance(url, token):
+    
+    policy_url = f"{url}/compliance"
+    
+    api_headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+        'x-redlock-auth': token
+    }
+    body = {}
+    compliance = (requests.request("GET", policy_url, headers=api_headers, data=body)).json()
+    
+    return compliance
