@@ -24,10 +24,11 @@ import json
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
 @click.option('--list-compliance', is_flag=True, help="List compliance names")
 @click.option('--policy-label', type=str, help="Match policies against a policy label")
+@click.option('--new-label', type=str, help="Add a label to matched policies")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, policy_label, compliance, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, policy_label, new_label, compliance, export):
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
@@ -82,6 +83,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         policy_labels   = row.get('labels', None)
         
         total_count += 1
+        new_labels  = []
         
         if compliance is None or (compliance_data is not None and isinstance(compliance_data, list) and any(item.get('standardName') == compliance for item in compliance_data)):
 
@@ -93,43 +95,58 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             
             if new_severity:
                 policies[index]['severity'] = new_severity
+                
+            if new_label:
+                new_labels = policies[index]['labels'] + [new_label]
+                policies[index]['labels'] = new_labels
                     
             if not apply:
-                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels)
+                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels)
+                
                 if export:
                     filename = f"before_change_{timestamp}.csv"
                     export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
             
             if apply:
                 if enable:
-                    action = "enable"
+                    action      = "enable"
                     status_code = apply_policies(url, token, policy_action, policy_id)
                 if disable:
-                    action = "disable"
+                    action      = "disable"
                     status_code = apply_policies(url, token, policy_action, policy_id)
                 if new_severity:
-                    action = "severity"
-                    payload = json.dumps(policies[index])
+                    action      = "severity"
+                    payload     = json.dumps(policies[index])
+                    status_code = apply_policies(url, token, policy_action, policy_id, payload)
+                if new_label:
+                    action      = "label"
+                    payload     = json.dumps(policies[index])
                     status_code = apply_policies(url, token, policy_action, policy_id, payload)
                 
                 if status_code == 200:
                     if action == "enable":
                         policy_status = "true"
                     if action == "disable":
-                        policy_status = "false"          
+                        policy_status = "false"
                     if action == "severity":
-                        policy_severity = new_severity                                           
+                        policy_severity = new_severity               
+                    if action == "label":
+                        policy_labels = new_labels                
+
                     filename = f"success_{action}_{timestamp}.csv"
-                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity])
+                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
                     print_status(status_code, policy_name)
                     
                 if status_code == 400:
                     filename = f"failed_{action}_{timestamp}.csv"
-                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity])
+                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
                     print_status(status_code, policy_name)
             
     print_total(total_count, enabled_count, disabled_count, severity, policy_subtype)
     
-    if enable or disable or new_severity:
+    if enable or disable or new_severity or new_label:
+        print("")
         print_apply(apply)
+        print("")
+        
     pass
