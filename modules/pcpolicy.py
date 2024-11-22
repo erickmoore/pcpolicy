@@ -25,10 +25,11 @@ import json
 @click.option('--list-compliance', is_flag=True, help="List compliance names")
 @click.option('--policy-label', type=str, help="Match policies against a policy label")
 @click.option('--new-label', type=str, help="Add a label to matched policies")
+@click.option('--exclude-label', multiple=True, type=str, help="Exclude policies with this label")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, policy_label, new_label, compliance, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, policy_label, new_label, exclude_label, compliance, export):
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
@@ -67,6 +68,10 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         df = df[df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in include))]
     if exclude:
         df = df[~df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in exclude))]
+    if exclude_label:
+        df = df[~df['labels'].apply(lambda labels: 
+        any(any(f.lower() in label.lower() for f in exclude_label) for label in labels)
+    )]
     
     # Set policy count to zero before parsing data
     total_count     = 0
