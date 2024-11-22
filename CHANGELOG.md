@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/erickmoore/pcpolicy/compare/v0.2.0...v0.3.0) (2024-11-22)
+
+
+### Features
+
+* Added '--match' option for include search ([4326d91](https://github.com/erickmoore/pcpolicy/commit/4326d919b39f0357fdef96d8a1f5695d89defc0d))
+
 ## [0.2.0](https://github.com/erickmoore/pcpolicy/compare/v0.1.1...v0.2.0) (2024-11-22)
 
 
