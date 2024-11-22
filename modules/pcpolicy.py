@@ -22,6 +22,7 @@ import json
 @click.option('--disable', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["enable"], help="Disable selected policies")
 @click.option('--include', multiple=True, type=str, help="Include policies by name")
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
+@click.option('--match', type=click.Choice(['any', 'all']))
 @click.option('--list-compliance', is_flag=True, help="List compliance names")
 @click.option('--include-label', type=str, help="Include policies with matching label name")
 @click.option('--exclude-label', multiple=True, type=str, help="Exclude policies with matching label name")
@@ -30,7 +31,7 @@ import json
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, include_label, new_label, exclude_label, remove_label, compliance, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, include_label, new_label, exclude_label, remove_label, compliance, export, match):
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
@@ -41,6 +42,9 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     policy_action = None
     if enable: policy_action  = 'enable'
     if disable: policy_action = 'disable'
+    
+    if not match:
+        match = 'any'
     
     token = login(url, username, password)
     
@@ -66,9 +70,17 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     
     # Filter DataFrame for policies that match applied filters
     if include:
-        df = df[df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in include))]
+        include_lower = [f.lower() for f in include]  # Normalize include filters
+        if match == "all":
+            df = df[df['name'].str.lower().apply(lambda x: all(f in x for f in include_lower))]
+        if match == "any":
+            df = df[df['name'].str.lower().apply(lambda x: any(f in x for f in include_lower))]            
     if exclude:
-        df = df[~df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in exclude))]
+        exclude_lower = [f.lower() for f in exclude]
+        if match == "all":
+            df = df[~df['name'].str.lower().apply(lambda x: all(f.lower() in x for f in exclude_lower))]
+        if match == "any":
+            df = df[~df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in exclude_lower))]
     if include_label:
         df = df[df['labels'].apply(lambda labels: 
         any(any(f.lower() in label.lower() for f in include_label) for label in labels)
