@@ -64,9 +64,9 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
     
     # Filter DataFrame for policies that match applied filters
     if include:
-        df = df[df['name'].apply(lambda x: any(f in x for f in include))]
+        df = df[df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in include))]
     if exclude:
-        df = df[~df['name'].apply(lambda x: any(f in x for f in exclude))]
+        df = df[~df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in exclude))]
     
     # Set policy count to zero before parsing data
     total_count     = 0
@@ -96,7 +96,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             if new_severity:
                 policies[index]['severity'] = new_severity
                 
-            if new_label:
+            if new_label and new_label not in policies[index]['labels']:
                 new_labels = policies[index]['labels'] + [new_label]
                 policies[index]['labels'] = new_labels
                     
