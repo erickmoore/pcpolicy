@@ -21,7 +21,7 @@ def login(url, username, password):
 
 # // Get Policies
 #
-def get_policies(url, token, severity=None, policy_status=None, policy_subtype=None, cloud=None):
+def get_policies(url, token, severity=None, policy_status=None, policy_subtype=None, cloud=None, policy_label=None):
     
     params = []
     
@@ -36,6 +36,9 @@ def get_policies(url, token, severity=None, policy_status=None, policy_subtype=N
         
     if severity:
         params.append(f"policy.severity={severity}")
+        
+    if policy_label:
+        params.append(f"policy.label={policy_label}")        
         
     if params:
         policy_url = f"{url}/v2/policy?" + "&".join(params)
