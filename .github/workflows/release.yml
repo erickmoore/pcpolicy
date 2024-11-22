@@ -17,3 +17,22 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: simple
+
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Update Setup.py
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          NEW_VERSION="${{ steps.release.outputs.tag_name }}"
+          sed -i "s/version='[^']*'/version='$NEW_VERSION'/g" setup.py
+        
+          
+      - name: Commit changes
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add setup.py
+          git commit -m "docs: update setup.py version"
+          git push          

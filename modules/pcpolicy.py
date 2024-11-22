@@ -23,12 +23,14 @@ import json
 @click.option('--include', multiple=True, type=str, help="Include policies by name")
 @click.option('--exclude', multiple=True, type=str, help="Exclude policies by name")
 @click.option('--list-compliance', is_flag=True, help="List compliance names")
-@click.option('--policy-label', type=str, help="Match policies against a policy label")
+@click.option('--include-label', type=str, help="Include policies with matching label name")
+@click.option('--exclude-label', multiple=True, type=str, help="Exclude policies with matching label name")
 @click.option('--new-label', type=str, help="Add a label to matched policies")
+@click.option('--remove-label', type=str, help="Add a label to matched policies")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
-def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, policy_label, new_label, compliance, export):
+def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled, enable, disable, include, exclude, new_severity, list_compliance, include_label, new_label, exclude_label, remove_label, compliance, export):
     
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
@@ -54,7 +56,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             print(compliance_name)
         return
         
-    policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud, policy_label)
+    policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud, include_label)
     
     # Create Pandas DataFrame
     df = pd.DataFrame(policies)
@@ -67,6 +69,14 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         df = df[df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in include))]
     if exclude:
         df = df[~df['name'].str.lower().apply(lambda x: any(f.lower() in x for f in exclude))]
+    if include_label:
+        df = df[df['labels'].apply(lambda labels: 
+        any(any(f.lower() in label.lower() for f in include_label) for label in labels)
+    )]        
+    if exclude_label:
+        df = df[~df['labels'].apply(lambda labels: 
+        any(any(f.lower() in label.lower() for f in exclude_label) for label in labels)
+    )]
     
     # Set policy count to zero before parsing data
     total_count     = 0
@@ -84,6 +94,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
         
         total_count += 1
         new_labels  = []
+        last_label  = False
         
         if compliance is None or (compliance_data is not None and isinstance(compliance_data, list) and any(item.get('standardName') == compliance for item in compliance_data)):
 
@@ -99,9 +110,15 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             if new_label and new_label not in policies[index]['labels']:
                 new_labels = policies[index]['labels'] + [new_label]
                 policies[index]['labels'] = new_labels
-                    
+                
+            if remove_label and remove_label in policies[index]['labels']:
+                new_labels = [label for label in policies[index]['labels'] if label != remove_label]
+                policies[index]['labels'] = new_labels
+                if new_labels == []:
+                    last_label = True
+                
             if not apply:
-                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels)
+                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels, last_label)
                 
                 if export:
                     filename = f"before_change_{timestamp}.csv"
@@ -118,7 +135,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
                     action      = "severity"
                     payload     = json.dumps(policies[index])
                     status_code = apply_policies(url, token, policy_action, policy_id, payload)
-                if new_label:
+                if new_label or remove_label:
                     action      = "label"
                     payload     = json.dumps(policies[index])
                     status_code = apply_policies(url, token, policy_action, policy_id, payload)
@@ -144,7 +161,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             
     print_total(total_count, enabled_count, disabled_count, severity, policy_subtype)
     
-    if enable or disable or new_severity or new_label:
+    if enable or disable or new_severity or new_label or remove_label:
         print("")
         print_apply(apply)
         print("")
