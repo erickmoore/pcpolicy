@@ -8,7 +8,7 @@ def export_csv(name, data):
     if not os.path.exists(filename):
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Policy Name', 'Policy ID', 'Policy Status', 'Policy Severity'])
+            writer.writerow(['Policy Name', 'Policy ID', 'Policy Status', 'Policy Severity', 'Policy Labels'])
 
     # Append the data to the CSV file
     with open(filename, mode='a', newline='') as file:
