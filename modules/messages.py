@@ -11,7 +11,7 @@ def print_status(status_code, policy_name):
         print(f"{Fore.RED}400 Failed to Enable{Style.RESET_ALL}: {policy_name}")
         
 # /////////////// Print Results        
-def print_results(policy_name, policy_status, policy_action, policy_severity, new_severity):
+def print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_label):
     if policy_status == True:
         if policy_action == 'enable':
             print(f"{Fore.YELLOW}NO CHANGE: {Style.RESET_ALL}{policy_name}")
