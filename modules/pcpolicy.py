@@ -96,7 +96,7 @@ def main(apply, severity, policy_subtype, cloud, policy_enabled, policy_disabled
             if new_severity:
                 policies[index]['severity'] = new_severity
                 
-            if new_label:
+            if new_label and new_label not in policies[index]['labels']:
                 new_labels = policies[index]['labels'] + [new_label]
                 policies[index]['labels'] = new_labels
                     
