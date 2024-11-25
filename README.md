@@ -6,7 +6,7 @@
 
 ## Requirements
 
-This script currently uses environment variables to authenticate against Prisma Cloud. In the future this may be changed to another method, but currently it is required to have the following 3 settings added as environment variables on the machine where you run the script.
+This script currently uses environment variables to authenticate against Prisma Cloud. In the future this may be changed to another method, but currently it is required to have the following 3 settings added as environment variables on the machine where you run the script. Alternatively you can edit the contents of [config.py](/modules/config.py).
 
  | name |  setting  | type | description |
  |----|-----------|------|-------------|
