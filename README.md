@@ -117,6 +117,16 @@ pcpolicy --compliance 'PCI DSS v4.0' --policy-disabled
 pcpolicy --compliance 'PCI DSS v4.0' --policy-disabled --enable --cloud aws --apply
 ```
 
+##### Label all matching run policies in Azure with nsg, public, network, private, ipv4, and firewall with the label Azure_Public
+```sh
+pcpolicy --cloud azure --policy-subtype run --include nsg --include public --include network --include private --include ipv4 --include firewall --new-label Azure_Public --apply
+```
+
+##### Remove all Azure_Public labels from all matching policies
+```sh
+pcpolicy --include-label Azure_Public --remove-label Azure_Public --apply
+```
+
 <br>
 
 ---
