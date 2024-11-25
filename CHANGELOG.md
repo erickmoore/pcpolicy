@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/erickmoore/pcpolicy/compare/v0.3.0...v0.3.1) (2024-11-25)
+
+
+### Bug Fixes
+
+* Changed help text for new features ([ce33e1d](https://github.com/erickmoore/pcpolicy/commit/ce33e1d35ac79fae6047baa0b5abcab9d4240b44))
+
 ## [0.3.0](https://github.com/erickmoore/pcpolicy/compare/v0.2.0...v0.3.0) (2024-11-22)
 
 
