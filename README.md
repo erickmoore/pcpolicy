@@ -54,6 +54,11 @@ pcpolicy [OPTIONS]
 - `--disable`: Disable the selected policies (mutually exclusive with `--enable`).
 - `--include`: Include policies by name (multiple values allowed).
 - `--exclude`: Exclude policies by name (multiple values allowed).
+- `--include-label`: Include policies with matching label name.
+- `--exclude-label`: Exclude policies with matching label name.
+- `--remove-label`: Remove label to matched policies.
+- `--new-label`: Add a label to matched policies.
+- `--match`: Change match criteria to any match or all match for include/exclude searches (`['any', 'all']`).
 - `--export`: Export results as a CSV.
 
 <br>

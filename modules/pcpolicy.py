@@ -27,7 +27,7 @@ import json
 @click.option('--include-label', type=str, help="Include policies with matching label name")
 @click.option('--exclude-label', multiple=True, type=str, help="Exclude policies with matching label name")
 @click.option('--new-label', type=str, help="Add a label to matched policies")
-@click.option('--remove-label', type=str, help="Add a label to matched policies")
+@click.option('--remove-label', type=str, help="Remove label to matched policies")
 @click.option('--compliance', type=str, help="Match policies against a compliance standard")
 @click.option('--export', is_flag=True, cls=MutuallyExclusiveOption, mutually_exclusive=["apply"], help="Export results as a CSV")
 
