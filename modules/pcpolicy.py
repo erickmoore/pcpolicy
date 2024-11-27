@@ -2,7 +2,7 @@
 
 import pandas as pd
 import click
-from options import add_dynamic_options
+from modules.options import get_click_options
 from modules.config import url, password, username
 from modules.api import login, get_policies, apply_policies, get_compliance
 from modules.messages import print_status, print_results, print_total, print_apply
@@ -12,7 +12,6 @@ from datetime import datetime
 import json
 
 @click.command()
-@add_dynamic_options
 
 def main(**kwargs):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -165,3 +164,6 @@ def main(**kwargs):
         print("")
         
     pass
+
+for option in get_click_options():
+    main = option(main)

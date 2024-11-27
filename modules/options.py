@@ -1,8 +1,8 @@
 import click
 from modules.arg_validator import MutuallyExclusiveOption, SeverityType
 
-def add_dynamic_options(cmd):
-    options = [
+def get_click_options():
+    return [
         click.option('--apply', is_flag=True, help="Apply selected changes"),
         click.option('--cloud', type=click.Choice(['aws', 'azure', 'gcp', 'alibaba', 'oci'])),
         click.option('--compliance', type=str, help="Match policies against a compliance standard"),
@@ -22,7 +22,4 @@ def add_dynamic_options(cmd):
         click.option('--policy-subtype', type=click.Choice(['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity'])),
         click.option('--remove-label', type=str, help="Remove label to matched policies"),
         click.option('--severity', type=SeverityType(), help=f"Policy severity, accepts: c: critical, h: high, m: medium, l: low, i: informational)"),
-    
     ]
-    cmd.params.extend(options)
-    return cmd
