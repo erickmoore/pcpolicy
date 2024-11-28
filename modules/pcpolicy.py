@@ -5,16 +5,19 @@ import click
 from modules.options import get_click_options
 from modules.config import url, password, username
 from modules.api import login, get_policies, apply_policies, get_compliance
-from modules.messages import print_status, print_results, print_total, print_apply
+from modules.messages import print_status, print_results, print_total, print_whatif_apply
 from modules.export import export_csv
 from modules.filter_data import filter_column
+from modules.process_policy import process_policy
 from datetime import datetime
 import json
 
 @click.command()
 
 def main(**kwargs):
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamp     = datetime.now().strftime('%Y%m%d_%H%M%S')
+    policy_status = None
+    policy_action = None
     
     apply           = kwargs.get('apply', False)
     cloud           = kwargs.get('cloud')
@@ -36,18 +39,20 @@ def main(**kwargs):
     remove_label    = kwargs.get('remove_label')
     severity        = kwargs.get('severity')
         
-    policy_status = None
+    
     if policy_enabled: policy_status  = 'true'
     if policy_disabled: policy_status = 'false'
     
-    policy_action = None
     if enable: policy_action  = 'enable'
     if disable: policy_action = 'disable'
     
+    # Adjust filter match criteria
     match_function = all if matchall == True else any
 
+    # Make API call to get auth token
     token = login(url, username, password)
     
+    # Make API Call to get compliance policies if --list-compliance is selected
     if list_compliance:
         compliance_standards = get_compliance(url, token)
         df = pd.DataFrame(compliance_standards)
@@ -59,7 +64,8 @@ def main(**kwargs):
             compliance_name = row['name']
             print(compliance_name)
         return
-        
+    
+    # Make API call to get policies passing API filters
     policies = get_policies(url, token, severity, policy_status, policy_subtype, cloud, include_label)
     
     # Create Pandas DataFrame
@@ -75,93 +81,62 @@ def main(**kwargs):
     if exclude_label:
         df = filter_column(df, 'labels', exclude_label, match_function, exclude=True)
 
+    # Policy modification options
+    options = {
+        'apply': apply,
+        'compliance': compliance,
+        'enable': enable,
+        'disable': disable,
+        'new_severity': new_severity,
+        'new_label': new_label,
+        'remove_label': remove_label
+    }
+
     # Set policy count to zero before parsing data
+    processed_policies = []
     total_count     = 0
     enabled_count   = 0
     disabled_count  = 0
     
-    # Loop through policies from Pandas DataFrame
-    for index, row in df.iterrows():
-        policy_name     = row.get('name', None)
-        policy_id       = row.get('policyId', None)
-        policy_status   = row.get('enabled', None)
-        policy_severity = row.get('severity', None)
-        compliance_data = row.get('complianceMetadata', None)
-        policy_labels   = row.get('labels', None)
+    for _, row in df.iterrows():
+        policy_result = process_policy(row, options)
+        
+        if policy_result is None:
+            continue
         
         total_count += 1
-        new_labels  = []
-        last_label  = False
         
-        if compliance is None or (compliance_data is not None and isinstance(compliance_data, list) and match_function(item.get('standardName') == compliance for item in compliance_data)):
-
-            if policy_status == True:
-                enabled_count += 1
-                
-            if policy_status == False:
-                disabled_count += 1
-            
-            if new_severity:
-                policies[index]['severity'] = new_severity
-                
-            if new_label and new_label not in policies[index]['labels']:
-                new_labels = policies[index]['labels'] + [new_label]
-                policies[index]['labels'] = new_labels
-                
-            if remove_label and remove_label in policies[index]['labels']:
-                new_labels = [label for label in policies[index]['labels'] if label != remove_label]
-                policies[index]['labels'] = new_labels
-                if new_labels == []:
-                    last_label = True
-                
-            if not apply:
-                print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels, last_label)
-                
-                if export:
-                    filename = f"before_change_{timestamp}.csv"
-                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
-            
-            if apply:
-                if enable:
-                    action      = "enable"
-                    status_code = apply_policies(url, token, policy_action, policy_id)
-                if disable:
-                    action      = "disable"
-                    status_code = apply_policies(url, token, policy_action, policy_id)
-                if new_severity:
-                    action      = "severity"
-                    payload     = json.dumps(policies[index])
-                    status_code = apply_policies(url, token, policy_action, policy_id, payload)
-                if new_label or remove_label:
-                    action      = "label"
-                    payload     = json.dumps(policies[index])
-                    status_code = apply_policies(url, token, policy_action, policy_id, payload)
-                
-                if status_code == 200:
-                    if action == "enable":
-                        policy_status = "true"
-                    if action == "disable":
-                        policy_status = "false"
-                    if action == "severity":
-                        policy_severity = new_severity               
-                    if action == "label":
-                        policy_labels = new_labels                
-
-                    filename = f"success_{action}_{timestamp}.csv"
-                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
-                    print_status(status_code, policy_name)
-                    
-                if status_code == 400:
-                    filename = f"failed_{action}_{timestamp}.csv"
-                    export_csv(filename, [policy_name, policy_id, policy_status, policy_severity, policy_labels])
-                    print_status(status_code, policy_name)
-            
+        # Count enabled/disabled statuses
+        if policy_result['original']['status']:
+            enabled_count += 1
+        else:
+            disabled_count += 1
+        
+        # Print or apply changes based on configuration
+        if not apply:
+            print_results(
+                policy_result['original']['name'], 
+                policy_result['original']['status'], 
+                None,  # action 
+                policy_result['original']['severity'], 
+                policy_result['modified']['severity'], 
+                policy_result['original']['labels'], 
+                policy_result['modified']['labels'],
+                policy_result.get('is_last_label', False)
+            )
+        
+        if apply:
+            for action in policy_result['actions']:
+                status_code = apply_policies(url, token, action, policy_result['original']['policyId'])
+                print_status(status_code, policy_result['original']['name'])
+                pass
+        
+        processed_policies.append(policy_result)
+    
     print_total(total_count, enabled_count, disabled_count, severity, policy_subtype)
     
     if enable or disable or new_severity or new_label or remove_label:
-        print("")
-        print_apply(apply)
-        print("")
+        print_whatif_apply(apply)
         
     pass
 

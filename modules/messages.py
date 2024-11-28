@@ -11,7 +11,8 @@ def print_status(status_code, policy_name):
         print(f"{Fore.RED}400 Failed to Enable{Style.RESET_ALL}: {policy_name}")
         
 # /////////////// Print Results        
-def print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels, last_label):
+def print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels, is_last_label):
+    
     if policy_status == True:
         if policy_action == 'enable':
             print(f"{Fore.YELLOW}NO CHANGE: {Style.RESET_ALL}{policy_name}")
@@ -33,8 +34,8 @@ def print_results(policy_name, policy_status, policy_action, policy_severity, ne
         proposed_severity = severity_color(new_severity)
         print(f"{Fore.LIGHTRED_EX}WILL CHANGE{Style.RESET_ALL}: {current_severity}{Style.RESET_ALL} to {proposed_severity}")
         
-    if new_labels or last_label:
-        if last_label:
+    if new_labels or is_last_label:
+        if is_last_label:
             new_labels = '[]'
         print(f"{Fore.LIGHTRED_EX}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{policy_labels} {Style.RESET_ALL} to {Fore.GREEN} {new_labels}")
         print("")
@@ -52,10 +53,12 @@ def print_total(total_count, enabled_count, disabled_count, severity, policy_sub
         print(f"{Fore.CYAN}Total matched policies: {Style.RESET_ALL}{total_count}")
     
 # /////////////// Print Apply    
-def print_apply(apply):
+def print_whatif_apply(apply):
     if not apply:
+        print("")
         print(f"{Fore.LIGHTMAGENTA_EX}To apply config re-run the same command with: --apply")
         print(f"{Fore.LIGHTBLUE_EX}To save the existing config to a csv file re-run the same command with: --export")
+        print("")
         
 # /////////////// Set severity color
 def severity_color(severity):       
