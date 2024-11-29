@@ -17,7 +17,6 @@ import json
 def main(**kwargs):
     timestamp     = datetime.now().strftime('%Y%m%d_%H%M%S')
     policy_status = None
-    policy_action = None
     
     apply           = kwargs.get('apply', False)
     cloud           = kwargs.get('cloud')
@@ -39,12 +38,8 @@ def main(**kwargs):
     remove_label    = kwargs.get('remove_label')
     severity        = kwargs.get('severity')
         
-    
-    if policy_enabled: policy_status  = 'true'
-    if policy_disabled: policy_status = 'false'
-    
-    if enable: policy_action  = 'enable'
-    if disable: policy_action = 'disable'
+    if policy_enabled: policy_status  = True
+    if policy_disabled: policy_status = False
     
     # Adjust filter match criteria
     match_function = all if matchall == True else any
@@ -60,7 +55,7 @@ def main(**kwargs):
             df = filter_column(df, 'name', include, match_function)
         if exclude:
             df = filter_column(df, 'name', exclude, match_function, exclude=True)
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             compliance_name = row['name']
             print(compliance_name)
         return
@@ -114,16 +109,17 @@ def main(**kwargs):
         
         # Print or apply changes based on configuration
         if not apply:
-            print_results(
-                policy_result['original']['name'], 
-                policy_result['original']['status'], 
-                None,  # action 
-                policy_result['original']['severity'], 
-                policy_result['modified']['severity'], 
-                policy_result['original']['labels'], 
-                policy_result['modified']['labels'],
-                policy_result.get('is_last_label', False)
-            )
+            print_results(policy_result, options)
+            # print_results(
+            #     policy_result['original']['name'], 
+            #     policy_result['original']['status'], 
+            #     None,  # action 
+            #     policy_result['original']['severity'], 
+            #     policy_result['modified']['severity'], 
+            #     policy_result['original']['labels'], 
+            #     policy_result['modified']['labels'],
+            #     policy_result.get('is_last_label', False)
+            # )
         
         if apply:
             for action in policy_result['actions']:

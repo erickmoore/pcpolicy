@@ -12,12 +12,14 @@ def process_policy(row, options):
     # Extract policy details
     policy_details = {
         'name': row.get('name'),
-        'id': row.get('policyId'),
+        'policyId': row.get('policyId'),
         'status': row.get('enabled'),
         'severity': row.get('severity'),
         'labels': row.get('labels', []),
         'compliance': row.get('complianceMetadata', [])
     }
+    
+    is_last_label = False
     
     # Compliance check
     if options['compliance'] is not None:
@@ -30,6 +32,14 @@ def process_policy(row, options):
     # Apply severity change
     if options['new_severity']:
         modified_policy['severity'] = options['new_severity']
+        
+    # Apply enable change
+    if options['enable']:
+        modified_policy['status'] = True
+        
+    # Apply enable change
+    if options['disable']:
+        modified_policy['status'] = False
     
     # Manage labels
     if options['new_label'] and options['new_label'] not in modified_policy['labels']:
