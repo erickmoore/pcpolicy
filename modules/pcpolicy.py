@@ -10,7 +10,6 @@ from modules.export import export_csv
 from modules.filter_data import filter_column
 from modules.process_policy import process_policy
 from datetime import datetime
-import json
 
 @click.command()
 
