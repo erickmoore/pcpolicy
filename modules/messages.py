@@ -37,31 +37,17 @@ def print_results(policy_result, options):
         current_severity = severity_color(original['severity'])
         proposed_severity = severity_color(modified['severity'])
         if original['severity'] != modified['severity']:
-            print(f"{Fore.LIGHTRED_EX}WILL CHANGE SEVERITY{Style.RESET_ALL}: {current_severity} {Style.RESET_ALL}to {proposed_severity}")
+            print(f"{Fore.GREEN}WILL CHANGE SEVERITY{Style.RESET_ALL}: {current_severity} {Style.RESET_ALL}to {proposed_severity}")
         else:
             print(f"{Fore.LIGHTBLUE_EX}NO CHANGE{Style.RESET_ALL}: {current_severity} {Style.RESET_ALL}to {proposed_severity}")
     
     # Label change handling
-    
-    
     label_changed = (options['new_label'] or options['remove_label']) and \
                     (original['labels'] != modified['labels'] or policy_result.get('is_last_label', False))
     
-    
     if label_changed:
         new_labels = '[]' if policy_result.get('is_last_label', False) else modified['labels']
-        print(f"Policy: {Style.RESET_ALL}{original['name']}")
-        print(f"{Fore.LIGHTRED_EX}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{original['labels']} {Style.RESET_ALL}to {Fore.GREEN}{new_labels}")
-        
-        
-    # label_changed = (options['new_label'] or options['remove_label']) and \
-    #                     (original['labels'] != modified['labels'] or policy_result.get('is_last_label', False))
-    
-    # if label_changed:
-    #     new_labels = '[]' if policy_result.get('is_last_label', False) else modified['labels']
-    #     print(f"Policy: {Style.RESET_ALL}{original['name']}")
-    #     print(f"{Fore.LIGHTRED_EX}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{original['labels']} {Style.RESET_ALL}to {Fore.GREEN}{new_labels}")
-        
+        print(f"{Fore.GREEN}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{original['labels']} {Style.RESET_ALL}to {Fore.GREEN}{new_labels}")
     
             
 # /////////////// Print Totals  
@@ -90,11 +76,11 @@ def severity_color(severity):
     if severity == 'high': 
         severity_text = Fore.LIGHTRED_EX + severity + " priority" + Fore.CYAN
     if severity == 'medium': 
-        severity_text = Fore.LIGHTYELLOW_EX + severity + " priority" + Fore.CYAN
-    if severity == 'low': 
         severity_text = Fore.YELLOW + severity + " priority" + Fore.CYAN
-    if severity == 'informational': 
+    if severity == 'low': 
         severity_text = Fore.BLUE + severity + " priority" + Fore.CYAN
+    if severity == 'informational': 
+        severity_text = Fore.LIGHTWHITE_EX + severity + " priority" + Fore.CYAN
     if severity == None: 
         severity_text = ""
         
