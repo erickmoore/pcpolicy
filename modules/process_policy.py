@@ -45,7 +45,7 @@ def process_policy(row, options):
         modified_policy['status'] = False
     
     # Manage labels
-    if options['new_label']:
+    if options['new_label'] and options['new_label'] not in modified_policy['labels']:
         modified_policy['labels'].append(options['new_label'])
         
     if options['remove_label'] and options['remove_label'] in modified_policy['labels']:

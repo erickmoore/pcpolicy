@@ -110,6 +110,15 @@ def main(**kwargs):
             enabled_count += 1
         else:
             disabled_count += 1
+            
+        if export:
+            filename = f"before_change_{timestamp}.csv"
+            export_csv(filename, [  policy_result['original']['name'], 
+                                    policy_result['original']['policyId'], 
+                                    policy_result['original']['status'],
+                                    policy_result['original']['severity'], 
+                                    policy_result['original']['labels']
+                                ])
         
         # Print or apply changes based on configuration
         if not apply:
