@@ -1,3 +1,5 @@
+import copy
+
 def process_policy(row, options):
     """
     Process a single policy with given options.
@@ -9,6 +11,7 @@ def process_policy(row, options):
     Returns:
         dict: Updated policy information and processing results
     """
+    
     # Extract policy details
     policy_details = {
         'name': row.get('name'),
@@ -27,7 +30,7 @@ def process_policy(row, options):
             return None
     
     # Create a copy of the policy to modify
-    modified_policy = policy_details.copy()
+    modified_policy = copy.deepcopy(policy_details)
     
     # Apply severity change
     if options['new_severity']:
@@ -42,9 +45,9 @@ def process_policy(row, options):
         modified_policy['status'] = False
     
     # Manage labels
-    if options['new_label'] and options['new_label'] not in modified_policy['labels']:
+    if options['new_label']:
         modified_policy['labels'].append(options['new_label'])
-    
+        
     if options['remove_label'] and options['remove_label'] in modified_policy['labels']:
         modified_policy['labels'] = [
             label for label in modified_policy['labels'] 

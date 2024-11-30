@@ -66,11 +66,6 @@ def main(**kwargs):
     # Create Pandas DataFrame
     df = pd.DataFrame(policies)
     
-    # column_names = df.columns.tolist()
-    # print(column_names)
-    
-    # return
-
     # Filter data
     if include:
         df = filter_column(df, 'name', include, match_function)
@@ -85,7 +80,6 @@ def main(**kwargs):
     if policy_disabled:
         df = df[df['enabled'] == False]
         
-
     # Policy modification options
     options = {
         'apply': apply,
