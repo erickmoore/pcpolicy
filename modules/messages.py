@@ -15,7 +15,7 @@ def print_status(status_code, policy_name):
 def print_results(policy_result, options):
     original = policy_result['original']
     modified = policy_result['modified']
-    
+
     # Status change handling
     if options['enable'] or options['disable']:
         if original['status'] != modified['status']:
@@ -41,38 +41,20 @@ def print_results(policy_result, options):
         new_labels = '[]' if policy_result.get('is_last_label', False) else modified['labels']
         print(f"Policy: {Style.RESET_ALL}{original['name']}")
         print(f"{Fore.LIGHTRED_EX}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{original['labels']} {Style.RESET_ALL} to {Fore.GREEN}{new_labels}")
-        print("")
         
-# # /////////////// Print Results        
-# def print_results(policy_name, policy_status, policy_action, policy_severity, new_severity, policy_labels, new_labels, is_last_label):
-    
-#     if policy_status == True:
-#         if policy_action == 'enable':
-#             print(f"{Fore.YELLOW}NO CHANGE: {Style.RESET_ALL}{policy_name}")
-#         if policy_action =='disable':
-#             print(f"{Fore.RED}WILL DISABLE: {Style.RESET_ALL}{policy_name}")
-#         if not policy_action:   
-#          print(f"{Fore.GREEN}ENABLED: {Style.RESET_ALL}{policy_name}")
         
-#     if policy_status == False:
-#         if policy_action == 'disable':
-#             print(f"{Fore.YELLOW}NO CHANGE: {Style.RESET_ALL}{policy_name}")
-#         if policy_action =='enable':
-#             print(f"{Fore.GREEN}WILL ENABLE: {Style.RESET_ALL}{policy_name}")
-#         if not policy_action:   
-#          print(f"{Fore.LIGHTRED_EX}DISABLED: {Style.RESET_ALL}{policy_name}")
-         
-#     if policy_severity != new_severity:
-#         current_severity = severity_color(policy_severity)
-#         proposed_severity = severity_color(new_severity)
-#         print(f"{Fore.LIGHTRED_EX}WILL CHANGE{Style.RESET_ALL}: {current_severity}{Style.RESET_ALL} to {proposed_severity}")
         
-#     if new_labels != policy_labels or is_last_label:
-#         if is_last_label:
-#             new_labels = '[]'
-#         print(f"{Fore.LIGHTRED_EX}WILL CHANGE LABELS{Style.RESET_ALL}: {Fore.LIGHTRED_EX}{policy_labels} {Style.RESET_ALL} to {Fore.GREEN} {new_labels}")
-#         print("")
+
+    if original['status'] == True:
+        print(f"{Fore.GREEN}ENABLED: {Style.RESET_ALL}{original['name']}")
+    if original['status'] == False:
+        print(f"{Fore.RED}DISABLED: {Style.RESET_ALL}{original['name']}")
         
+        
+        
+        
+        
+            
 # /////////////// Print Totals  
 def print_total(total_count, enabled_count, disabled_count, severity, policy_subtype):
     severity_text = severity_color(severity)
@@ -91,7 +73,6 @@ def print_whatif_apply(apply):
         print("")
         print(f"{Fore.LIGHTMAGENTA_EX}To apply config re-run the same command with: --apply")
         print(f"{Fore.LIGHTBLUE_EX}To save the existing config to a csv file re-run the same command with: --export")
-        print("")
         
 # /////////////// Set severity color
 def severity_color(severity):       

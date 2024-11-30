@@ -65,6 +65,11 @@ def main(**kwargs):
     
     # Create Pandas DataFrame
     df = pd.DataFrame(policies)
+    
+    # column_names = df.columns.tolist()
+    # print(column_names)
+    
+    # return
 
     # Filter data
     if include:
@@ -75,6 +80,11 @@ def main(**kwargs):
         df = filter_column(df, 'labels', include_label, match_function)
     if exclude_label:
         df = filter_column(df, 'labels', exclude_label, match_function, exclude=True)
+    if policy_enabled:
+        df = df[df['enabled'] == True]
+    if policy_disabled:
+        df = df[df['enabled'] == False]
+        
 
     # Policy modification options
     options = {
@@ -110,22 +120,21 @@ def main(**kwargs):
         # Print or apply changes based on configuration
         if not apply:
             print_results(policy_result, options)
-            # print_results(
-            #     policy_result['original']['name'], 
-            #     policy_result['original']['status'], 
-            #     None,  # action 
-            #     policy_result['original']['severity'], 
-            #     policy_result['modified']['severity'], 
-            #     policy_result['original']['labels'], 
-            #     policy_result['modified']['labels'],
-            #     policy_result.get('is_last_label', False)
-            # )
         
         if apply:
             for action in policy_result['actions']:
-                status_code = apply_policies(url, token, action, policy_result['original']['policyId'])
+                if action in ['enable', 'disable']:
+                    status_code = apply_policies(url, token, action, policy_result['original']['policyId'])
+                elif action == 'update':
+                    status_code = apply_policies(url, token, action, policy_result['original']['policyId'], 
+                    payload=policy_result['modified'])
                 print_status(status_code, policy_result['original']['name'])
-                pass
+        
+        # if apply:
+        #     for action in policy_result['actions']:
+        #         status_code = apply_policies(url, token, action, policy_result['original']['policyId'])
+        #         print_status(status_code, policy_result['original']['name'])
+        #         pass
         
         processed_policies.append(policy_result)
     
