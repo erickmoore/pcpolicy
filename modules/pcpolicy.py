@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 
-import pandas as pd
 import click
-from modules.options import get_click_options
-from modules.config import url, password, username
+from datetime import datetime
 from modules.api import login, get_policies, apply_policies, get_compliance
-from modules.messages import print_status, print_results, print_total, print_whatif_apply
+from modules.config import url, password, username
 from modules.export import export_csv
 from modules.filter_data import filter_column
+from modules.messages import print_status, print_results, print_total, print_whatif_apply
+from modules.options import get_click_options
 from modules.process_policy import process_policy
-from datetime import datetime
+import pandas as pd
 
 @click.command()
-
 def main(**kwargs):
     timestamp     = datetime.now().strftime('%Y%m%d_%H%M%S')
     policy_status = None
@@ -112,12 +111,14 @@ def main(**kwargs):
             
         if export:
             filename = f"before_change_{timestamp}.csv"
-            export_csv(filename, [  policy_result['original']['name'], 
-                                    policy_result['original']['policyId'], 
-                                    policy_result['original']['status'],
-                                    policy_result['original']['severity'], 
-                                    policy_result['original']['labels']
-                                ])
+            export_csv(filename, 
+                    [  
+                    policy_result['original']['name'], 
+                    policy_result['original']['policyId'], 
+                    policy_result['original']['status'],
+                    policy_result['original']['severity'], 
+                    policy_result['original']['labels']
+                    ])
         
         # Print or apply changes based on configuration
         if not apply:

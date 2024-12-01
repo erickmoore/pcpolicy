@@ -23,11 +23,18 @@ def process_policy(row, options):
     }
     
     is_last_label = False
-    
-    # Compliance check
+        
     if options['compliance'] is not None:
-        if not any(item.get('standardName') == options['compliance'] for item in policy_details['compliance']):
-            return None
+        compliance_metadata = policy_details['compliance']
+        if not isinstance(compliance_metadata, list):
+            compliance_metadata = [compliance_metadata] if compliance_metadata is not None else []
+
+        if not any(
+            item.get('standardName') == options['compliance'] 
+            for item in compliance_metadata
+            if isinstance(item, dict)
+        ):
+            return None        
     
     # Create a copy of the policy to modify
     modified_policy = copy.deepcopy(policy_details)
