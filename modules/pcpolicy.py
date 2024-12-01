@@ -161,7 +161,6 @@ def main(**kwargs):
     
     if enable or disable or new_severity or new_label or remove_label:
         print_whatif_apply(apply)
-        
     pass
 
 for option in get_click_options():

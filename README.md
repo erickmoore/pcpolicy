@@ -42,24 +42,24 @@ pcpolicy [OPTIONS]
 ### Options
 
 - `--apply`: Apply selected changes.
-- `--severity`: Specify the policy severity (required) to one of `[c: critical, h: high, m: medium, l: low, i: informational]`.
-- `--new-severity`: Change the selected policy severity to one of `['critical', 'high', 'medium', 'low', 'informational']`.
-- `--policy-subtype`: Filter policies by subtype (`['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']`).
 - `--cloud`: Filter policies by cloud provider (`['aws', 'azure', 'gcp', 'alibaba', 'oci']`).
-- `--list-compliance`: List all compliance standard names.
 - `--compliance`: Find policies associated with a compliance standard.
-- `--policy-enabled`: Find enabled policies.
-- `--policy-disabled`: Find disabled policies.
-- `--enable`: Enable the selected policies (mutually exclusive with `--disable`).
 - `--disable`: Disable the selected policies (mutually exclusive with `--enable`).
-- `--include`: Include policies by name (multiple values allowed).
-- `--exclude`: Exclude policies by name (multiple values allowed).
-- `--include-label`: Include policies with matching label name.
+- `--enable`: Enable the selected policies (mutually exclusive with `--disable`).
 - `--exclude-label`: Exclude policies with matching label name.
-- `--remove-label`: Remove label to matched policies.
-- `--new-label`: Add a label to matched policies.
-- `--match`: Change match criteria to any match or all match for include/exclude searches (`['any', 'all']`).
+- `--exclude`: Exclude policies by name (multiple values allowed).
 - `--export`: Export results as a CSV.
+- `--include-label`: Include policies with matching label name.
+- `--include`: Include policies by name (multiple values allowed).
+- `--list-compliance`: List all compliance standard names.
+- `--match`: Change match criteria to any match or all match for include/exclude searches (`['any', 'all']`).
+- `--new-label`: Add a label to matched policies.
+- `--new-severity`: Change the selected policy severity to one of `['critical', 'high', 'medium', 'low', 'informational']`.
+- `--policy-disabled`: Find disabled policies.
+- `--policy-enabled`: Find enabled policies.
+- `--policy-subtype`: Filter policies by subtype (`['run', 'build', 'run_and_build', 'audit', 'data_classification', 'dns', 'malware', 'network_event', 'network', 'ueba', 'permissions', 'identity']`).
+- `--remove-label`: Remove label to matched policies.
+- `--severity`: Specify the policy severity (required) to one of `[c: critical, h: high, m: medium, l: low, i: informational]`.
 
 <br>
 
