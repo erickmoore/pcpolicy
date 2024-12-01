@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/erickmoore/pcpolicy/compare/v0.3.1...v0.4.0) (2024-12-01)
+
+
+### Features
+
+* internal code changes and better filtering ([b254b1f](https://github.com/erickmoore/pcpolicy/commit/b254b1f743dd24b726e9c99c70afdaa61d6b68a2))
+
 ## [0.3.1](https://github.com/erickmoore/pcpolicy/compare/v0.3.0...v0.3.1) (2024-11-25)
 
 
