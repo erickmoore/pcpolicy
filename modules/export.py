@@ -1,9 +1,7 @@
 import csv
 import os
 
-def export_csv(name, data):
-    filename = name
-    
+def export_csv(filename, data):
     # Create the CSV file and write the headers if they don't exist
     if not os.path.exists(filename):
         with open(filename, mode='w', newline='') as file:

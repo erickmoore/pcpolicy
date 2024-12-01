@@ -55,8 +55,6 @@ def get_policies(url, token, severity=None, policy_status=None, policy_subtype=N
     
     return policies
 
-# // Modify Policies
-#
 def apply_policies(url, token, policy_action, policy_id, payload=None):
     api_headers = {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -67,22 +65,24 @@ def apply_policies(url, token, policy_action, policy_id, payload=None):
     if policy_action == 'enable':
         policy_url = f"{url}/policy/{policy_id}/status/true"
         results = requests.request("PATCH", policy_url, headers=api_headers, data={})
-        
         return results.status_code
     
     if policy_action == 'disable':
         policy_url = f"{url}/policy/{policy_id}/status/false"
         results = requests.request("PATCH", policy_url, headers=api_headers, data={})
-        
         return results.status_code 
     
-    if payload:
+    if policy_action == 'update':
         policy_url = f"{url}/policy/{policy_id}"
+        payload = json.dumps({
+            'severity': payload.get('severity'),
+            'labels': payload.get('labels', [])
+        })
         results = requests.request("PUT", policy_url, headers=api_headers, data=payload)
-        
         return results.status_code
     
-    
+    return None
+
 # // Get Policies
 #
 def get_compliance(url, token):
