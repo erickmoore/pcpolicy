@@ -9,9 +9,14 @@ def print_status(status_code, policy_name):
         print(f"{Fore.GREEN}SUCCESS{Style.RESET_ALL}: {policy_name}")
     if status_code == 400:
         print(f"{Fore.RED}400 Failed to Enable{Style.RESET_ALL}: {policy_name}")
-        
-        
-        
+
+"""
+Displays output to the terminal based on policy changes.
+
+Args:
+    policy_result: Datafrane policy data
+    options: Policy modification options
+"""    
 def print_results(policy_result, options):
     original = policy_result['original']
     modified = policy_result['modified']
@@ -67,7 +72,7 @@ def print_whatif_apply(apply):
     if not apply:
         print("")
         print(f"{Fore.LIGHTMAGENTA_EX}To apply config re-run the same command with: --apply")
-        print(f"{Fore.LIGHTBLUE_EX}To save the existing config to a csv file re-run the same command with: --export")
+        print(f"{Fore.LIGHTBLUE_EX}To save the existing config to a json file re-run the same command with: --export")
         
 # /////////////// Set severity color
 def severity_color(severity):       
