@@ -126,29 +126,32 @@ def main(**kwargs):
             for action in policy_result['actions']:
                 filename_before = f"before_apply_{action}_{timestamp}.csv"
                 filename_after = f"after_apply_{action}_{timestamp}.csv"
-            
-                if action in ['enable', 'disable']:
-                    status_code = apply_policies(url, token, action, policy_result['original']['policyId'])
-                elif action == 'update':
-                    status_code = apply_policies(url, token, action, policy_result['original']['policyId'], 
-                    payload=policy_result['modified'])
-                    
-                filename = f"success_{action}_{timestamp}.csv"
-                export_csv(filename_before, [ 
-                        policy_result['original']['name'], 
-                        policy_result['original']['policyId'], 
-                        policy_result['original']['status'],
-                        policy_result['original']['severity'], 
-                        policy_result['original']['labels']
-                    ])
-                export_csv(filename_after, [ 
-                        policy_result['modified']['name'], 
-                        policy_result['modified']['policyId'], 
-                        policy_result['modified']['status'],
-                        policy_result['modified']['severity'], 
-                        policy_result['modified']['labels']
-                    ])
-                
+
+                # Determine payload based on action
+                payload = policy_result['modified'] if action == 'update' else None
+                status_code = apply_policies(
+                    url, token, action, policy_result['original']['policyId'], payload=payload
+                )
+
+                original_data = [
+                    policy_result['original']['name'],
+                    policy_result['original']['policyId'],
+                    policy_result['original']['status'],
+                    policy_result['original']['severity'],
+                    policy_result['original']['labels']
+                ]
+                modified_data = [
+                    policy_result['modified']['name'],
+                    policy_result['modified']['policyId'],
+                    policy_result['modified']['status'],
+                    policy_result['modified']['severity'],
+                    policy_result['modified']['labels']
+                ]
+
+                export_csv(filename_before, original_data)
+                export_csv(filename_after, modified_data)
+
+                # CLI output
                 print_status(status_code, policy_result['original']['name'])
         
         processed_policies.append(policy_result)

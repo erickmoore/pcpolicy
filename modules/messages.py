@@ -26,11 +26,11 @@ def print_results(policy_result, options):
         if original['status'] != modified['status']:
             color = Fore.GREEN if modified['status'] else Fore.RED
             status_text = "WILL ENABLE" if modified['status'] else "WILL DISABLE"
-            print(f"{color}{status_text}: {Style.RESET_ALL}{original['name']}")
+            print(f"{color}{status_text}: {original['name']}")
         else:
             color = Fore.LIGHTBLUE_EX
             status_text = "NO CHANGE"
-            print(f"{color}{status_text}: {Style.RESET_ALL}{original['name']}")
+            print(f"{color}{status_text}: {original['name']}")
     
     # Severity change handling
     if options['new_severity']:
